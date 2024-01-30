@@ -1,0 +1,123 @@
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id               String    @id @default(uuid())
+  name             String
+  email            String    @unique
+  profile          String?
+  password         String
+  changePasswordAt DateTime?
+  role             Role      @default(USER)
+  Address          Address[]
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+  Review           Review[]
+  Card             Card?
+  Order            Order[]
+}
+
+model Address {
+  id         String   @id @default(uuid())
+  userId     String
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  city       String
+  street     String
+  country    String
+  codePostal Int
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  Order      Order?
+}
+
+model Plante {
+  id            String    @id @default(uuid())
+  name          String
+  categoryId    String
+  category      Category  @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  description   String?
+  imageUrl      String?
+  price         Float
+  currency      Currency
+  discountPrice Float?
+  rating        Float     @default(0)
+  Count_Rate    Int       @default(0)
+  Review        Review[]
+  cartItem      CardItem?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+}
+
+model Category {
+  id        String   @id @default(uuid())
+  name      String
+  imageUrl  String
+  plantes   Plante[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Review {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  content   String?
+  rating    Int      @default(5)
+  planteId  String
+  plante    Plante   @relation(fields: [planteId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Card {
+  id         String     @id @default(uuid())
+  userId     String     @unique
+  user       User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  cardItem   CardItem[]
+  totalPrice Float      @default(0)
+  createdAt  DateTime   @default(now())
+  updatedAt  DateTime   @updatedAt
+}
+
+model CardItem {
+  id        String   @id @default(uuid())
+  cardId    String
+  card      Card     @relation(fields: [cardId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  quantity  Int      @default(1)
+  planteId  String   @unique
+  plante    Plante   @relation(fields: [planteId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  order     Order?
+}
+
+model Order {
+  id            String   @id @default(uuid())
+  userId        String
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  cardItemId    String   @unique
+  cartItem      CardItem @relation(fields: [cardItemId], references: [id], onDelete: Cascade)
+  isDelaiverd   Boolean  @default(false)
+  isDelaiverdAt DateTime
+  addressId     String   @unique
+  address       Address  @relation(fields: [addressId], references: [id], onDelete: Cascade)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+// enum
+enum Role {
+  USER
+  ADMIN
+}
+
+enum Currency {
+  USD
+  EUR
+}
