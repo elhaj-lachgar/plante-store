@@ -1,5 +1,5 @@
 const expressAsyncHandler = require("express-async-handler");
-const prisma = require('../utils/PrismaClient');
+const prisma = require("../utils/PrismaClient");
 const ErrorHandling = require("../utils/ErrorFeature");
 const stripe = require("stripe")(process.env.STRIPE);
 
@@ -76,11 +76,22 @@ exports.WebhookService = expressAsyncHandler(async (req, res, next) => {
   // Handle the event
 
   if (event.type == "checkout.session.completed") {
-    const {client_reference_id ,  customer_email ,  metadata } = event.data.object;
-    const user = await prisma.user.findUnique({where:{email : customer_email}});
-    const order = await prisma.order.create({data:{userId : user.id , addressId : metadata.address , cardId : client_reference_id }})
-    res.send();
+    const { client_reference_id, customer_email, metadata } = event.data.object;
+    const user = await prisma.user.findUnique({
+      where: { email: customer_email },
+    });
+    try {
+      const order = await prisma.order.create({
+        data: {
+          userId: user.id,
+          addressId: metadata.address,
+          cardId: client_reference_id,
+        },
+      });
+    } catch (e) {
+      console.log(e);
+    }
+    return res.send();
   }
-
-  // Return a 200 response to acknvowledge receipt of the event
+  return res.status(404).json({ message: "same thing gose wrong" });
 });
