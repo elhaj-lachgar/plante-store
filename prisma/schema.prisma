@@ -25,7 +25,7 @@ model User {
 
 model Address {
   id         String   @id @default(uuid())
-  userId     String
+  userId     String    @unique
   user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   city       String
   street     String
@@ -33,7 +33,7 @@ model Address {
   codePostal Int
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
-  Order      Order?
+  Order      Order[]
 }
 
 model Plante {
@@ -83,7 +83,7 @@ model Card {
   totalPrice Float      @default(0)
   createdAt  DateTime   @default(now())
   updatedAt  DateTime   @updatedAt
-  Order      Order?
+  Order      Order[]
 }
 
 model CardItem {
@@ -100,13 +100,13 @@ model CardItem {
 
 model Order {
   id            String     @id @default(uuid())
-  userId        String     @unique
+  userId        String    
   user          User       @relation(fields: [userId], references: [id], onDelete: Cascade)
-  cardId        String     @unique
+  cardId        String     
   card          Card       @relation(fields: [cardId], references: [id], onDelete: Cascade)
   isDelaiverd   Boolean    @default(false)
-  isDelaiverdAt DateTime
-  addressId     String     @unique
+  isDelaiverdAt DateTime ?
+  addressId     String    
   address       Address    @relation(fields: [addressId], references: [id], onDelete: Cascade)
   createdAt     DateTime   @default(now())
   updatedAt     DateTime   @updatedAt

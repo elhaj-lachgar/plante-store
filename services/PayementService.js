@@ -1,6 +1,5 @@
 const expressAsyncHandler = require("express-async-handler");
-const { PrismaClient } = require("@prisma/client");
-const prisma = new PrismaClient();
+const prisma = require("../utils/PrismaClient");
 const ErrorHandling = require("../utils/ErrorFeature");
 const stripe = require("stripe")(process.env.STRIPE);
 
@@ -81,17 +80,12 @@ exports.WebhookService = expressAsyncHandler(async (req, res, next) => {
     const user = await prisma.user.findUnique({
       where: { email: customer_email },
     });
-
-    console.log(user);
+   
+    console.log({ cardId : client_reference_id , userId : user.id , addressId : metadata.address})
 
     try {
-      const order = await prisma.order.create({
-        data: {
-          userId : user.id,
-          addressId : metadata.address,
-          cardId : client_reference_id, 
-        },
-      });
+      const order = await prisma.order.create({data:{ cardId : client_reference_id , userId : user.id , addressId : metadata.address}});
+      console.log({order});
     } catch (e) {
       console.log(e);
     }

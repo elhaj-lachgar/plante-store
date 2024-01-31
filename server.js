@@ -33,6 +33,7 @@ app.post(
 
 app.use(express.json({ limit: "200kb" }));
 
+
 app.use(morgan("dev"));
 
 app.use("/api/v1/auth", AuthRoute);
