@@ -86,8 +86,9 @@ exports.WebhookService = expressAsyncHandler(async (req, res, next) => {
           userId: user.id,
           addressId: metadata.address,
           cardId: client_reference_id,
+          isDelaiverd : false
         },
-      });
+      }); 
     } catch (e) {
       console.log(e);
     }
