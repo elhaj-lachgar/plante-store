@@ -100,7 +100,7 @@ model CardItem {
 
 model Order {
   id            String     @id @default(uuid())
-  userId        String
+  userId        String     @unique
   user          User       @relation(fields: [userId], references: [id], onDelete: Cascade)
   cardId        String     @unique
   card          Card       @relation(fields: [cardId], references: [id], onDelete: Cascade)
