@@ -1,5 +1,5 @@
 const expressAsyncHandler = require("express-async-handler");
-const prisma = require("../utils/PrismaClient");
+const prisma = require('../utils/PrismaClient');
 const ErrorHandling = require("../utils/ErrorFeature");
 const stripe = require("stripe")(process.env.STRIPE);
 
@@ -31,8 +31,6 @@ exports.CreateLineItems = expressAsyncHandler(async (req, res, next) => {
 });
 
 exports.CheckoutService = expressAsyncHandler(async (req, res, next) => {
-
-
   const location = await prisma.address.findUnique({
     where: { id: req.body.address, userId: req.user.id },
   });
@@ -57,4 +55,32 @@ exports.CheckoutService = expressAsyncHandler(async (req, res, next) => {
     return next(new ErrorHandling(err.message || err, 400));
   }
   return res.status(200).json({ url: session.url });
+});
+
+exports.WebhookService = expressAsyncHandler(async (req, res, next) => {
+  const sig = req.headers["stripe-signature"];
+
+  let event;
+
+  try {
+    event = await stripe.webhooks.constructEvent(
+      req.body,
+      sig,
+      process.env.SUCRET_KEY_WEBHOOK
+    );
+  } catch (err) {
+    response.status(400).send(`Webhook Error: ${err.message}`);
+    return;
+  }
+
+  // Handle the event
+
+  if (event.type == "checkout.session.completed") {
+    const {client_reference_id ,  customer_email ,  metadata } = event.data.object;
+    const user = await prisma.user.findUnique({where:{email : customer_email}});
+    const order = await prisma.order.create({data:{userId : user.id , addressId : metadata.address , cardId : client_reference_id }})
+    res.send();
+  }
+
+  // Return a 200 response to acknvowledge receipt of the event
 });

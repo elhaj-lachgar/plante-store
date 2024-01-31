@@ -83,6 +83,7 @@ model Card {
   totalPrice Float      @default(0)
   createdAt  DateTime   @default(now())
   updatedAt  DateTime   @updatedAt
+  Order      Order?
 }
 
 model CardItem {
@@ -94,21 +95,21 @@ model CardItem {
   plante    Plante   @relation(fields: [planteId], references: [id], onDelete: Cascade)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  order     Order?
+  orderId   String?
 }
 
 model Order {
-  id            String   @id @default(uuid())
+  id            String     @id @default(uuid())
   userId        String
-  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  cardItemId    String   @unique
-  cartItem      CardItem @relation(fields: [cardItemId], references: [id], onDelete: Cascade)
-  isDelaiverd   Boolean  @default(false)
+  user          User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  cardId        String     @unique
+  card          Card       @relation(fields: [cardId], references: [id], onDelete: Cascade)
+  isDelaiverd   Boolean    @default(false)
   isDelaiverdAt DateTime
-  addressId     String   @unique
-  address       Address  @relation(fields: [addressId], references: [id], onDelete: Cascade)
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+  addressId     String     @unique
+  address       Address    @relation(fields: [addressId], references: [id], onDelete: Cascade)
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @updatedAt
 }
 
 // enum

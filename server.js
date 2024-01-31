@@ -17,7 +17,7 @@ const CategoryRoute = require("./api/CategoryRoute");
 const CardRoute = require("./api/CardRoute");
 const AddressRoute = require("./api/AddressRoute");
 const CheckoutRoute = require("./api/PayementRoute");
-const stripe = require("stripe")(process.env.STRIPE);
+const {WebhookService} = require('./services/PayementService')
 
 // configuration
 dotenv.config({ path: ".env" });
@@ -28,31 +28,7 @@ app.options("*", cors());
 app.post(
   "/webhook",
   express.raw({ type: "application/json" }),
-  async (req, res) => {
-    const sig = req.headers["stripe-signature"];
-
-    let event;
-
-    try {
-      event = await stripe.webhooks.constructEvent(
-        req.body,
-        sig,
-        process.env.SUCRET_KEY_WEBHOOK
-      );
-    } catch (err) {
-      response.status(400).send(`Webhook Error: ${err.message}`);
-      return;
-    }
-
-    // Handle the event
-
-    if (event.type == "payment_intent.succeeded") {
-      console.log(event.data.object);
-    }
-
-    // Return a 200 response to acknvowledge receipt of the event
-    res.send();
-  }
+  WebhookService
 );
 
 app.use(express.json({ limit: "200kb" }));

@@ -81,6 +81,7 @@ class GetFeature {
       query.where.OR = this.buildSearchConditions(searchBy);
     }
 
+
     const data = await this.prisma[model].findMany(query);
     const total = await this.prisma[model].count({ where: query.where });
     const totalPages = Math.ceil(total / limit);
