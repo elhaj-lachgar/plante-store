@@ -80,16 +80,17 @@ exports.WebhookService = expressAsyncHandler(async (req, res, next) => {
     const user = await prisma.user.findUnique({
       where: { email: customer_email },
     });
+
+    const data = {
+      userId: user.id,
+      addressId: metadata.address,
+      cardId: client_reference_id,
+    };
+  
     try {
       const order = await prisma.order.create({
-        data: {
-          userId: user.id,
-          addressId: metadata.address,
-          cardId: client_reference_id,
-          isDelaiverd : false,
-          isDelaiverdAt : new Date(Date.now())
-        },
-      }); 
+        data,
+      });
     } catch (e) {
       console.log(e);
     }
