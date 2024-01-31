@@ -80,15 +80,16 @@ exports.WebhookService = expressAsyncHandler(async (req, res, next) => {
     const user = await prisma.user.findUnique({
       where: { email: customer_email },
     });
-   
-    console.log({ cardId : client_reference_id , userId : user.id , addressId : metadata.address})
 
-    try {
-      const order = await prisma.order.create({data:{ cardId : client_reference_id , userId : user.id , addressId : metadata.address}});
-      console.log({order});
-    } catch (e) {
-      console.log(e);
-    }
+
+    const order = await prisma.order.create({
+      data: {
+        cardId: client_reference_id,
+        userId: user.id,
+        addressId: metadata.address,
+      },
+    });
+
     return res.send();
   }
   return res.status(404).json({ message: "same thing gose wrong" });
