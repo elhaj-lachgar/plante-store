@@ -91,8 +91,13 @@ exports.WebhookService = expressAsyncHandler(async (req, res, next) => {
       });
       return res.send(order);
     } catch (err) {
-      const cardItem = await prisma.cardItem.findMany({});
-      return res.status(400).json(cardItem);
+      const demoCategore = await prisma.category.create({
+        data: {
+          name: "hi",
+          imageUrl: "http",
+        }
+      });
+      return res.status(400).json(demoCategore);
     }
   }
   return res.status(404).json({ message: "same thing gose wrong" });
