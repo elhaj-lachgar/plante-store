@@ -84,12 +84,9 @@ exports.WebhookService = expressAsyncHandler(async (req, res, next) => {
     try {
       const order = await prisma.order.create({
         data: {
-          cardId: client_reference_id,
-          userId: user.id,
-          addressId: metadata.address,
-          user: user,
-          isDelaiverdAt: null,
-          isDelaiverd: false,
+          cardId: client_reference_id.toString(),
+          userId: user.id.toString(),
+          addressId: metadata.address.toString(),
         },
       });
     } catch (error) {
