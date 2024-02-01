@@ -35,21 +35,7 @@ app.post(
 );
 
 app.use(express.json({ limit: "200kb" }));
-app.post(
-  "/create",
-  async (req, res, next) => {
-    const user = await prisma.user.findUnique({
-      where: { email: req.body.email },
-    });
-    req.body.object = {
-      cardId: req.body.cardId,
-      userId: user.id,
-      addressId: req.body.addressId,
-    };
-    next();
-  },
-  CreateOrderService
-);
+
 
 app.use(morgan("dev"));
 
