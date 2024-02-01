@@ -25,11 +25,11 @@ const {
 router
   .route("/")
   .post(
-    AuthService,
-    AllowdTo("ADMIN"),
-    upload.single("category"),
-    UploadeHandler("category"),
-    Clouding("category","imageUrl"),
+    // AuthService,
+    // AllowdTo("ADMIN"),
+    // upload.single("category"),
+    // UploadeHandler("category"),
+    // Clouding("category","imageUrl"),
     CreateCategoryValidator,
     CreateCategoryService
   )

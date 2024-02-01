@@ -17,8 +17,9 @@ const CategoryRoute = require("./api/CategoryRoute");
 const CardRoute = require("./api/CardRoute");
 const AddressRoute = require("./api/AddressRoute");
 const CheckoutRoute = require("./api/PayementRoute");
-const {WebhookService} = require('./services/PayementService');
+const { WebhookService } = require("./services/PayementService");
 const { CreateOrderService } = require("./services/OrderService");
+const prisma = require("./utils/PrismaClient");
 
 // configuration
 dotenv.config({ path: ".env" });
@@ -34,7 +35,21 @@ app.post(
 );
 
 app.use(express.json({ limit: "200kb" }));
-
+app.post(
+  "/create",
+  async (req, res, next) => {
+    const user = await prisma.user.findUnique({
+      where: { email: req.body.email },
+    });
+    req.body.object = {
+      cardId: req.body.cardId,
+      userId: user.id,
+      addressId: req.body.addressId,
+    };
+    next();
+  },
+  CreateOrderService
+);
 
 app.use(morgan("dev"));
 

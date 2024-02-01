@@ -25,7 +25,7 @@ model User {
 
 model Address {
   id         String   @id @default(uuid())
-  userId     String    @unique
+  userId     String   @unique
   user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   city       String
   street     String
@@ -99,17 +99,17 @@ model CardItem {
 }
 
 model Order {
-  id            String     @id @default(uuid())
-  userId        String    
-  user          User       @relation(fields: [userId], references: [id], onDelete: Cascade)
-  cardId        String     
-  card          Card       @relation(fields: [cardId], references: [id], onDelete: Cascade)
-  isDelaiverd   Boolean    @default(false)
-  isDelaiverdAt DateTime ?
-  addressId     String    
-  address       Address    @relation(fields: [addressId], references: [id], onDelete: Cascade)
-  createdAt     DateTime   @default(now())
-  updatedAt     DateTime   @updatedAt
+  id            String    @id @default(uuid())
+  userId        String
+  user          User      @relation(fields: [userId], references: [id], onDelete: Cascade )
+  cardId        String
+  card          Card      @relation(fields: [cardId], references: [id], onDelete: Cascade)
+  isDelaiverd   Boolean   @default(false)
+  isDelaiverdAt DateTime?
+  addressId     String  
+  address       Address   @relation(fields: [addressId], references: [id], onDelete: Cascade)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
 }
 
 // enum
