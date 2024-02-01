@@ -81,16 +81,19 @@ exports.WebhookService = expressAsyncHandler(async (req, res, next) => {
       where: { email: customer_email },
     });
 
-    req.body.object = {
-      cardId: "8dd5b69f-40f7-413f-8281-b0b3b677c35e",
-      userId: "a5dd1cd8-1b5a-491d-af92-7aa653ceef5e",
-      addressId :"52857afb-1e47-4e37-889a-aec911936ece" , 
+    try {
+      const order = await prisma.order.create({
+        data: {
+          addressId: metadata.address,
+          cardId: client_reference_id,
+          userId: user.id,
+        },
+      });
+      return res.send(order);
+    } catch (err) {
+      const cardItem = await prisma.cardItem.findMany({});
+      return res.status(400).json(cardItem);
     }
-
-    return next();
   }
   return res.status(404).json({ message: "same thing gose wrong" });
 });
-
-
-
