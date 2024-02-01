@@ -80,7 +80,7 @@ exports.WebhookService = expressAsyncHandler(async (req, res, next) => {
     const user = await prisma.user.findUnique({
       where: { email: customer_email },
     });
-    const card = await prisma.card.findUnique({id:client_reference_id});
+    const card = await prisma.card.findUnique({where : {id:client_reference_id} });
     req.body.object = {
       cardId: client_reference_id,
       userId: user.id,
