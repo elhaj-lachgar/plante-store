@@ -1,5 +1,6 @@
 const expressAsyncHandler = require("express-async-handler");
-const prisma = require("../utils/PrismaClient");
+const {PrismaClient} = require("@prisma/client");
+const prisma = new PrismaClient();
 
 exports.CreateOrderService = expressAsyncHandler(async (req, res, next) => {
   console.log(req.body.object);
