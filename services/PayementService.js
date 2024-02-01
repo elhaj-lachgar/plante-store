@@ -81,22 +81,16 @@ exports.WebhookService = expressAsyncHandler(async (req, res, next) => {
       where: { email: customer_email },
     });
 
-    try {
-      const result = await createOrder({
-        userId: user.id,
-        addressId: metadata.address,
-        cardId: client_reference_id,
-      });
-    } catch (error) {
-      console.log(error);
+    req.body.object = {
+      cardId: client_reference_id,
+      userId: user.id,
+      addressId : metadata.address
     }
 
-    return res.send();
+    return next();
   }
   return res.status(404).json({ message: "same thing gose wrong" });
 });
 
-const createOrder = async (orderObject) => {
-  const order = await prisma.order.create({ data: { ...orderObject } });
-  return order;
-};
+
+

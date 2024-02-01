@@ -17,7 +17,8 @@ const CategoryRoute = require("./api/CategoryRoute");
 const CardRoute = require("./api/CardRoute");
 const AddressRoute = require("./api/AddressRoute");
 const CheckoutRoute = require("./api/PayementRoute");
-const {WebhookService} = require('./services/PayementService')
+const {WebhookService} = require('./services/PayementService');
+const { CreateOrderService } = require("./services/OrderService");
 
 // configuration
 dotenv.config({ path: ".env" });
@@ -28,7 +29,8 @@ app.options("*", cors());
 app.post(
   "/webhook",
   express.raw({ type: "application/json" }),
-  WebhookService
+  WebhookService,
+  CreateOrderService
 );
 
 app.use(express.json({ limit: "200kb" }));
