@@ -80,7 +80,7 @@ exports.WebhookService = expressAsyncHandler(async (req, res, next) => {
       cardId: client_reference_id,
       addressId: metadata.address,
     };
-    next();
+    return next();
   }
   return res.status(404).json({ message: "same thing gose wrong" });
 });
