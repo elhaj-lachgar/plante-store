@@ -73,32 +73,14 @@ exports.WebhookService = expressAsyncHandler(async (req, res, next) => {
     return;
   }
 
-  // Handle the event
-
   if (event.type == "checkout.session.completed") {
     const { client_reference_id, customer_email, metadata } = event.data.object;
-    const user = await prisma.user.findUnique({
-      where: { email: customer_email },
-    });
-
-    try {
-      const order = await prisma.order.create({
-        data: {
-          addressId: metadata.address,
-          cardId: client_reference_id,
-          userId: user.id,
-        },
-      });
-      return res.send(order);
-    } catch (err) {
-      const demoCategore = await prisma.category.create({
-        data: {
-          name: "hi",
-          imageUrl: "http",
-        }
-      });
-      return res.status(400).json(demoCategore);
-    }
+    req.body.object = {
+      UserEmail: customer_email,
+      cardId: client_reference_id,
+      addressId: metadata.address,
+    };
+    next();
   }
   return res.status(404).json({ message: "same thing gose wrong" });
 });

@@ -20,20 +20,19 @@ model User {
   updatedAt        DateTime  @updatedAt
   Review           Review[]
   Card             Card?
-  Order            Order[]
 }
 
 model Address {
-  id         String   @id @default(uuid())
-  userId     String   @unique
-  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id         String      @id @default(uuid())
+  userId     String      @unique
+  user       User        @relation(fields: [userId], references: [id], onDelete: Cascade)
   city       String
   street     String
   country    String
   codePostal Int
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
-  Order      Order[]
+  createdAt  DateTime    @default(now())
+  updatedAt  DateTime    @updatedAt
+  Order      UserOrder[]
 }
 
 model Plante {
@@ -76,14 +75,14 @@ model Review {
 }
 
 model Card {
-  id         String     @id @default(uuid())
-  userId     String     @unique
-  user       User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id         String      @id @default(uuid())
+  userId     String      @unique
+  user       User        @relation(fields: [userId], references: [id], onDelete: Cascade)
   cardItem   CardItem[]
-  totalPrice Float      @default(0)
-  createdAt  DateTime   @default(now())
-  updatedAt  DateTime   @updatedAt
-  Order      Order[]
+  totalPrice Float       @default(0)
+  createdAt  DateTime    @default(now())
+  updatedAt  DateTime    @updatedAt
+  Order      UserOrder[]
 }
 
 model CardItem {
@@ -98,18 +97,15 @@ model CardItem {
   orderId   String?
 }
 
-model Order {
-  id            String    @id @default(uuid())
-  userId        String
-  user          User      @relation(fields: [userId], references: [id], onDelete: Cascade )
-  cardId        String
-  card          Card      @relation(fields: [cardId], references: [id], onDelete: Cascade)
-  isDelaiverd   Boolean   @default(false)
-  isDelaiverdAt DateTime?
-  addressId     String  
-  address       Address   @relation(fields: [addressId], references: [id], onDelete: Cascade)
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
+model UserOrder {
+  id        String   @id @default(uuid())
+  UserEmail String
+  cardId    String
+  card      Card     @relation(fields: [cardId], references: [id])
+  addressId String
+  address   Address  @relation(fields: [addressId], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 // enum

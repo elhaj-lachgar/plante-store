@@ -18,23 +18,29 @@ const CardRoute = require("./api/CardRoute");
 const AddressRoute = require("./api/AddressRoute");
 const CheckoutRoute = require("./api/PayementRoute");
 const { WebhookService } = require("./services/PayementService");
+const { CreateOrderService } = require("./services/OrderService");
 
 // configuration
 dotenv.config({ path: ".env" });
 
+
+// cors configuration
 app.use(cors());
 app.options("*", cors());
+
+
+// tirggert of request
+app.use(morgan("dev"));
 
 app.post(
   "/webhook",
   express.raw({ type: "application/json" }),
   WebhookService,
+  CreateOrderService
 );
 
 app.use(express.json({ limit: "200kb" }));
 
-
-app.use(morgan("dev"));
 
 app.use("/api/v1/auth", AuthRoute);
 app.use("/api/v1/plante", PlanetRoute);
