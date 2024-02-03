@@ -29,6 +29,13 @@ exports.DeleteCategoryService = expressAsyncHandler(async (req, res, next) => {
 exports.GetCategoryService = expressAsyncHandler(async (req, res, next) => {
   const category = await prisma.category.findUnique({
     where: { id: req.params.id },
+    include : {
+      plantes: {
+        include : {
+          category : true
+        }
+      }
+    }
   });
   if (!category) return next(new ErrorHandling("category not found", 404));
   return res.status(200).json({ data: category });

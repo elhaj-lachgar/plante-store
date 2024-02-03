@@ -17,6 +17,7 @@ const CategoryRoute = require("./api/CategoryRoute");
 const CardRoute = require("./api/CardRoute");
 const AddressRoute = require("./api/AddressRoute");
 const CheckoutRoute = require("./api/PayementRoute");
+const OrderRoute = require("./api/OrderRoute");
 const { WebhookService } = require("./services/PayementService");
 const { CreateOrderService } = require("./services/OrderService");
 
@@ -48,6 +49,7 @@ app.use("/api/v1/category", CategoryRoute);
 app.use("/api/v1/card", CardRoute);
 app.use("/api/v1/location", AddressRoute);
 app.use("/api/v1/checkout", CheckoutRoute);
+app.use("/api/v1/order", OrderRoute);
 
 app.all("*", RouteUndefinded);
 

@@ -4,7 +4,7 @@ class GetFeature {
   constructor() {
     this.prisma = new PrismaClient();
   }
-  handleQuery(MainQuery , keyword) {
+  handleQuery(MainQuery, keyword) {
     let saveQuery = MainQuery;
     keyword = keyword ? keyword : "name";
     let query = {};
@@ -56,9 +56,9 @@ class GetFeature {
       );
     return filterBy;
   }
-  async findMany(model, options , include) {
-
-    let { sortBy, sortOrder, page, limit, filterBy, searchBy } = this.handleQuery(options);
+  async findMany(model, options, include) {
+    let { sortBy, sortOrder, page, limit, filterBy, searchBy } =
+      this.handleQuery(options);
     limit = limit || 5;
     page = page || 0;
 
@@ -72,20 +72,35 @@ class GetFeature {
       orderBy: sortBy ? { [sortBy]: sortOrder || "asc" } : undefined,
       skip: page && limit ? (page - 1) * limit : undefined,
       take: limit,
-      include : {
-        [include] : include ? true : undefined,
-      }
+      include: {},
     };
 
     if (searchBy && Object.keys(searchBy).length > 0) {
       query.where.OR = this.buildSearchConditions(searchBy);
     }
 
+    if (include) {
+      if (include == "admin") {
+        query.include = {
+          card: {
+            include: {
+              cardItem: {
+                include: { plante: { include: { category: true } } },
+              },
+            },
+          },
+          address: true,
+        };
+      }
+      else{
+        query.include ={ [include] : true};
+      }
+    }
 
     const data = await this.prisma[model].findMany(query);
     const total = await this.prisma[model].count({ where: query.where });
     const totalPages = Math.ceil(total / limit);
-  
+
     return {
       data,
       pagination: {
