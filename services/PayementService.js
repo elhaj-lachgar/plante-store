@@ -37,13 +37,15 @@ exports.CheckoutService = expressAsyncHandler(async (req, res, next) => {
 
   if (!location) return next(new ErrorHandling("address not found", 404));
 
+
+
   let session;
   try {
     session = await stripe.checkout.sessions.create({
-      success_url:"http://localhost:5173/profile/me?pay=true",
+      success_url: process.env.SUCESS_URL,
       mode: "payment",
       payment_method_types: ["card"],
-      cancel_url: "http://localhost:5173/?pay=false",
+      cancel_url:process.env.CANCELE_URL,
       customer_email: req.user.email,
       client_reference_id: req.user.Card.id,
       metadata: {
