@@ -40,10 +40,10 @@ exports.CheckoutService = expressAsyncHandler(async (req, res, next) => {
   let session;
   try {
     session = await stripe.checkout.sessions.create({
-      success_url: process.env.SUCESS_URL,
+      success_url:"http://localhost:5173/profile/me?pay=true",
       mode: "payment",
       payment_method_types: ["card"],
-      cancel_url: process.env.CANCELE_URL,
+      cancel_url: "http://localhost:5173/?pay=false",
       customer_email: req.user.email,
       client_reference_id: req.user.Card.id,
       metadata: {
