@@ -4,7 +4,10 @@ const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
 const ErrorHandler = require("../utils/ErrorFeature");
 const ErrorHandling = require("../utils/ErrorFeature");
+const GetFeature = require("../utils/GetFeatures");
 const cloudinary = require("cloudinary").v2;
+// const { PrismaClient } = require("@prisma/client");
+// const prisma = new PrismaClient();
 
 exports.SignUpService = expressAsyncHandler(async (req, res, next) => {
   req.body.image = undefined;
@@ -49,6 +52,13 @@ exports.AuthService = expressAsyncHandler(async (req, res, next) => {
       Card: {
         select: {
           id: true,
+          coupon: {
+            select: {
+              id: true,
+              code: true,
+              percentage: true,
+            },
+          },
         },
       },
     },
@@ -154,4 +164,55 @@ exports.UpdateProfileService = expressAsyncHandler(async (req, res, next) => {
 
   if (!user) return next(new ErrorHandling("user not found", 404));
   return res.status(200).json({ data: user });
+});
+
+exports.AdminLoginService = expressAsyncHandler(async (req, res, next) => {
+  const user = await prisma.user.findUnique({
+    where: { email: req.body.email },
+    include: {
+      Card: {
+        select: {
+          id: true,
+        },
+      },
+    },
+  });
+  if (!user) return next(new ErrorHandler("User not found", 404));
+  const IsValid = bcrypt.compareSync(req.body.password, user.password);
+  if (!IsValid)
+    return next(new ErrorHandler("email or password incorrect", 404));
+  if (user.role != "ADMIN")
+    return next(new ErrorHandler("not valid role", 404));
+  const UserInfo = user;
+  UserInfo.changePasswordAt = undefined;
+  UserInfo.password = undefined;
+
+  const token = jwt.sign({ userId: user.id }, process.env.SUCRET_KEY_JWT, {
+    expiresIn: process.env.EXIPRED_JWT,
+  });
+
+  return res.status(201).json({ data: UserInfo, token });
+});
+
+exports.GetUsersService = expressAsyncHandler(async (req, res, next) => {
+  const feature = new GetFeature();
+
+  const { data, pagination } = await feature.findMany(
+    "user",
+    req.query,
+    "private"
+  );
+
+  return res.status(200).json({ data, pagination });
+});
+
+exports.UpdateUserRoleService = expressAsyncHandler(async (req, res, next) => {
+  const user = await prisma.user.update({
+    where: { id: req.params.id },
+    data: {
+      role: req.body.role,
+    },
+  });
+
+  return res.status(201).json({ success: true, data: user });
 });

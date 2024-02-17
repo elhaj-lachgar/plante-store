@@ -72,7 +72,6 @@ class GetFeature {
       orderBy: sortBy ? { [sortBy]: sortOrder || "asc" } : undefined,
       skip: page && limit ? (page - 1) * limit : undefined,
       take: limit,
-      include: {},
     };
 
     if (searchBy && Object.keys(searchBy).length > 0) {
@@ -91,9 +90,20 @@ class GetFeature {
           },
           address: true,
         };
-      }
-      else{
-        query.include ={ [include] : true};
+      } else {
+        if (include == "private") {
+          query.select = {
+            Address: true,
+            profile: true,
+            role: true,
+            name: true,
+            email: true,
+            createdAt:true,
+            id:true
+          };
+        } else {
+          query.include = { [include]: true };
+        }
       }
     }
 

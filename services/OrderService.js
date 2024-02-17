@@ -32,7 +32,7 @@ exports.UpdateOrderServices = expressAsyncHandler(async (req, res, next) => {
     where: { id: req.params.id },
     data: {
       isDelaiverd: true,
-      isDelaiverdAt: new Date(Date.now()),
+      isDelaiverdAt: new Date(req.body.date),
     },
   });
   return res

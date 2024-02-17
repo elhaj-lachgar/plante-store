@@ -3,6 +3,8 @@ const prisma = require("../utils/PrismaClient");
 const ErrorHandling = require("../utils/ErrorFeature");
 const GetFeature = require("../utils/GetFeatures");
 const cloudinary = require("cloudinary").v2;
+// const { PrismaClient } = require("@prisma/client");
+// const prisma = new PrismaClient();
 
 exports.CreatePlanteService = expressAsyncHandler(async (req, res, next) => {
   req.body.image = undefined;
@@ -26,7 +28,9 @@ exports.UpdatePlanteService = expressAsyncHandler(async (req, res, next) => {
     });
 
     if (save?.imageUrl) {
-      const image  = [save.imageUrl.split('/')[7] , save.imageUrl.split('/')[8]].join('/').split('.')[0]
+      const image = [save.imageUrl.split("/")[7], save.imageUrl.split("/")[8]]
+        .join("/")
+        .split(".")[0];
       await cloudinary.api
         .delete_resources([image], {
           type: "upload",
@@ -57,7 +61,21 @@ exports.DeletePlanteService = expressAsyncHandler(async (req, res, next) => {
 exports.GetPlanteService = expressAsyncHandler(async (req, res, next) => {
   const plante = await prisma.plante.findUnique({
     where: { id: req.params.id },
-    include: { _count: true, Review: true },
+    include: {
+      _count: true,
+      Review: {
+        include: {
+          user: {
+            select: {
+              id : true,
+              email: true,
+              name: true,
+              profile: true,
+            },
+          },
+        },
+      },
+    },
   });
   if (!plante) return next(new ErrorHandling("plante not found"), 404);
   return res.status(201).json({ data: plante });

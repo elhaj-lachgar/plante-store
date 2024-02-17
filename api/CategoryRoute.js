@@ -25,6 +25,7 @@ const {
 router
   .route("/")
   .post(
+    express.json({limit:"100kb"}),
     AuthService,
     AllowdTo("ADMIN"),
     upload.single("category"),
@@ -33,17 +34,19 @@ router
     CreateCategoryValidator,
     CreateCategoryService
   )
-  .get(GetCategorysService);
+  .get(express.json({limit:"1kb"}),GetCategorysService);
 
 router
   .route("/:id")
   .delete(
+    express.json({limit:"1kb"}),
     AuthService,
     AllowdTo("ADMIN"),
     DeleteCategoryValidator,
     DeleteCategoryService
   )
   .put(
+    express.json({limit:"100kb"}),
     AuthService,
     AllowdTo("ADMIN"),
     upload.single("category"),
@@ -52,6 +55,6 @@ router
     UpdateCategoryValidator,
     UpdateCategoryService
   )
-  .get(GetCategoryValidator, GetCategoryService);
+  .get(express.json({limit:"1kb"}),GetCategoryValidator, GetCategoryService);
 
 module.exports = router;

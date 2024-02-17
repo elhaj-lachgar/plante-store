@@ -24,13 +24,14 @@ const {
 
 router
   .route("/")
-  .get(GetPlantesService)
+  .get(express.json({ limit: "1kb" }), GetPlantesService)
   .post(
+    express.json({ limit: "100kb" }),
     AuthService,
     AllowdTo("ADMIN"),
     upload.single("plante"),
     UploadeHandler("plante"),
-    Clouding("plante","imageUrl"),
+    Clouding("plante", "imageUrl"),
     CreatePlanteValidator,
     CreatePlanteService
   );
@@ -38,23 +39,22 @@ router
 router
   .route("/:id")
   .delete(
+    express.json({ limit: "1kb" }),
     AuthService,
     AllowdTo("ADMIN"),
-    upload.single("plante"),
-    UploadeHandler("plante"),
-    Clouding("plante","imageUrl"),
     DeletePlanteValidator,
     DeletePlanteService
   )
   .put(
+    express.json({ limit: "100kb" }),
     AuthService,
     AllowdTo("ADMIN"),
     upload.single("plante"),
     UploadeHandler("plante"),
-    Clouding("plante","imageUrl"),
+    Clouding("plante", "imageUrl"),
     UpdatePlanteValidator,
     UpdatePlanteService
   )
-  .get(GetPlanteValidator, GetPlanteService);
+  .get(express.json({ limit: "1kb" }), GetPlanteValidator, GetPlanteService);
 
 module.exports = router;

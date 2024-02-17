@@ -8,9 +8,11 @@ exports.CreateLineItems = expressAsyncHandler(async (req, res, next) => {
     where: { cardId: req.user.Card.id },
     include: { plante: true },
   });
-
+  const persontage  = req.user.Card.coupon.percentage || 0;
   if (!cardItems) return next(new ErrorHandling("cart not found", 404));
-  const line_items = cardItems.map((item) => {
+    const line_items = cardItems.map((item) => {
+    const totalPrice = parseInt((item.plante.discountPrice || item.plante.price) * 100);
+    const unit_amount = totalPrice - ((totalPrice * persontage)/100);
     return {
       price_data: {
         currency: item.plante.currency,
@@ -19,9 +21,7 @@ exports.CreateLineItems = expressAsyncHandler(async (req, res, next) => {
           images: [item.plante.imageUrl],
           metadata: { product_id: item.plante.id },
         },
-        unit_amount: parseInt(
-          (item.plante.discountPrice || item.plante.price) * 100
-        ),
+        unit_amount,
       },
       quantity: item.quantity,
     };
@@ -50,6 +50,7 @@ exports.CheckoutService = expressAsyncHandler(async (req, res, next) => {
       client_reference_id: req.user.Card.id,
       metadata: {
         address: location.id,
+        coupon : req.user.Card.coupon.code,
       },
       line_items: req.body.line_items,
     });

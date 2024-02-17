@@ -1,5 +1,5 @@
 const ValidatorMiddleware = require("../../middleware/ValidatorMiddleware");
-const { check} = require("express-validator");
+const { check } = require("express-validator");
 const prisma = require("../PrismaClient");
 
 exports.SignUpValidator = [
@@ -81,6 +81,8 @@ exports.ChangePasswordValidator = [
       if (!valid) throw new Error("password not match");
       return true;
     }),
+    
+  ValidatorMiddleware,
 ];
 
 exports.UpdateProfileValidator = [
@@ -105,3 +107,30 @@ exports.UpdateProfileValidator = [
 
   ValidatorMiddleware,
 ];
+
+exports.AdminSignInValidator = [
+  check("email")
+    .notEmpty()
+    .withMessage("email is required")
+    .isEmail()
+    .withMessage("email not valid"),
+
+  check("password")
+    .notEmpty()
+    .withMessage("password is required")
+    .isLength({ max: 16, min: 8 })
+    .withMessage("password must be  between 16 and 8 characters"),
+
+  ValidatorMiddleware,
+];
+
+
+exports.UpdateRoleValidator = [
+  check('id').notEmpty().withMessage('id is required'),
+  check('role').notEmpty().withMessage('role is required').custom((value)=>{
+    const valid = ["USER","ADMIN"].includes(value);
+    if(!valid) throw new Error('Invalid role');
+    return true;
+  }),
+  ValidatorMiddleware
+]

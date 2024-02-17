@@ -18,8 +18,11 @@ const CardRoute = require("./api/CardRoute");
 const AddressRoute = require("./api/AddressRoute");
 const CheckoutRoute = require("./api/PayementRoute");
 const OrderRoute = require("./api/OrderRoute");
+const ReviewRoute = require("./api/ReviewRoute");
+const CouponRoute = require("./api/CouponRoute");
 const { WebhookService } = require("./services/PayementService");
 const { CreateOrderService } = require("./services/OrderService");
+
 
 // configuration
 dotenv.config({ path: ".env" });
@@ -40,16 +43,21 @@ app.post(
   CreateOrderService
 );
 
-app.use(express.json({ limit: "200kb" }));
+
+
 
 
 app.use("/api/v1/auth", AuthRoute);
 app.use("/api/v1/plante", PlanetRoute);
 app.use("/api/v1/category", CategoryRoute);
+
+app.use(express.json({ limit: "1kb" }));
 app.use("/api/v1/card", CardRoute);
 app.use("/api/v1/location", AddressRoute);
 app.use("/api/v1/checkout", CheckoutRoute);
 app.use("/api/v1/order", OrderRoute);
+app.use("/api/v1/review" , ReviewRoute);
+app.use("/api/v1/coupon" , CouponRoute);
 
 app.all("*", RouteUndefinded);
 
