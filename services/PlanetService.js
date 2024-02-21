@@ -3,8 +3,7 @@ const prisma = require("../utils/PrismaClient");
 const ErrorHandling = require("../utils/ErrorFeature");
 const GetFeature = require("../utils/GetFeatures");
 const cloudinary = require("cloudinary").v2;
-// const { PrismaClient } = require("@prisma/client");
-// const prisma = new PrismaClient();
+
 
 exports.CreatePlanteService = expressAsyncHandler(async (req, res, next) => {
   req.body.image = undefined;
@@ -67,10 +66,24 @@ exports.GetPlanteService = expressAsyncHandler(async (req, res, next) => {
         include: {
           user: {
             select: {
-              id : true,
+              id: true,
               email: true,
               name: true,
               profile: true,
+            },
+          },
+        },
+      },
+      category: {
+        include: {
+          plantes: {
+            select: {
+              id: true,
+              imageUrl: true,
+              price: true,
+              currency: true,
+              name: true,
+              discountPrice: true,
             },
           },
         },

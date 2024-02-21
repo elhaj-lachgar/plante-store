@@ -22,19 +22,17 @@ const ReviewRoute = require("./api/ReviewRoute");
 const CouponRoute = require("./api/CouponRoute");
 const { WebhookService } = require("./services/PayementService");
 const { CreateOrderService } = require("./services/OrderService");
-
+const { GetSearchResult } = require("./services/SearchService");
 
 // configuration
 dotenv.config({ path: ".env" });
-
 
 // cors configuration
 app.use(cors());
 app.options("*", cors());
 
-
 // tirggert of request
-app.use(morgan("dev"));
+if (process.env.NODE_ENV == "dev") app.use(morgan("dev"));
 
 app.post(
   "/webhook",
@@ -44,9 +42,11 @@ app.post(
 );
 
 
+// search
 
+app.get('/api/v1/search/:value' , GetSearchResult);
 
-
+// auth routes
 app.use("/api/v1/auth", AuthRoute);
 app.use("/api/v1/plante", PlanetRoute);
 app.use("/api/v1/category", CategoryRoute);
@@ -56,8 +56,8 @@ app.use("/api/v1/card", CardRoute);
 app.use("/api/v1/location", AddressRoute);
 app.use("/api/v1/checkout", CheckoutRoute);
 app.use("/api/v1/order", OrderRoute);
-app.use("/api/v1/review" , ReviewRoute);
-app.use("/api/v1/coupon" , CouponRoute);
+app.use("/api/v1/review", ReviewRoute);
+app.use("/api/v1/coupon", CouponRoute);
 
 app.all("*", RouteUndefinded);
 

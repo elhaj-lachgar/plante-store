@@ -19,11 +19,11 @@ const {AuthService , AllowdTo} = require('../services/AuthService')
 
 router
   .route('/:id')
-  .put(AuthService , AllowdTo("USER") , UpdateReviewValidator ,UpdateReviewService)
-  .delete(AuthService , AllowdTo("USER") , DeleteReviewValidator , DeleteReviewService);
+  .put(AuthService ,AllowdTo("USER","ADMIN"), UpdateReviewValidator ,UpdateReviewService)
+  .delete(AuthService ,AllowdTo("USER","ADMIN") , DeleteReviewValidator , DeleteReviewService);
 
 router
-  .post("/",AuthService , AllowdTo("USER") , CreateReviewValidator , CreateReviewService);
+  .post("/",AuthService , AllowdTo("USER","ADMIN") , CreateReviewValidator , CreateReviewService);
 
 
 module.exports = router;

@@ -1,8 +1,7 @@
 const expressAsyncHandler = require("express-async-handler");
 const ErrorHandling = require("../utils/ErrorFeature");
-// const prisma = require('../utils/PrismaClient');
-const { PrismaClient } = require("@prisma/client");
-const prisma = new PrismaClient();
+const prisma = require("../utils/PrismaClient");
+
 
 exports.CreateReviewService = expressAsyncHandler(async (req, res, next) => {
   const review = await prisma.review.create({
@@ -27,37 +26,64 @@ exports.CreateReviewService = expressAsyncHandler(async (req, res, next) => {
 });
 
 exports.UpdateReviewService = expressAsyncHandler(async (req, res, next) => {
-  let per_review = {};
-  let rating = {};
-  if (req.body.rating) {
-    per_review.rating = await prisma.review.findUnique({
-      where: { id: req.params.id },
-      select: { rating: true },
-    });
-    per_review.Count_Rate = await prisma.plante.findUnique({
-      where: { id: req.params.id },
-      select: { Count_Rate: true },
-    });
-    rating = {
-      increment: Math.floor(
-        (req.body.rating - per_review.rating.rating) /
-          per_review.Count_Rate.Count_Rate
-      ),
-    };
-    const plante = await prisma.plante.update({
-      where: { id: review.planteId },
-      data: {
-        rating,
+  if (req.body?.rating) {
+    const review = await prisma.review.findUnique({
+      where: {
+        id: req.params.id,
+        userId: req.user.id,
+      },
+      include: {
+        plante: {
+          select: {
+            Count_Rate: true,
+            rating: true,
+          },
+        },
       },
     });
-  }
-  const review = await prisma.review.update({
-    where: { id: req.params.id, userId: req.user.id },
-    data: req.body,
-  });
-  if (!review) return next(new ErrorHandling("review not found"), 404);
+    if (!review) return next(new ErrorHandling("review not found", 404));
 
-  return res.status(200).json({ success: true, data: review });
+    const newRating =
+      review.plante.Count_Rate != 1
+        ? (req.body.rating - review.rating) / review.plante.Count_Rate
+        : req.body.rating - review.plante.rating;
+
+    try {
+      const plante = await prisma.plante.update({
+        where: {
+          id: review.planteId,
+        },
+        data: {
+          rating: { increment: newRating },
+        },
+      });
+
+      const updateReview = await prisma.review.update({
+        where: {
+          id: req.params.id,
+          userId: req.user.id,
+        },
+        data: {
+          rating: req.body.rating,
+          content: req.body.content,
+        },
+      });
+      return res.status(200).json({ success: true, data: updateReview });
+    } catch (error) {
+      return next(new ErrorHandling(error.message || error, 400));
+    }
+  } else {
+    const review = await prisma.review.update({
+      where: {
+        id: req.params.id,
+        userId: req.user.id,
+      },
+      data: {
+        content: req.body.content,
+      },
+    });
+    return res.status(200).json({ success: true, data: review });
+  }
 });
 
 exports.DeleteReviewService = expressAsyncHandler(async (req, res, next) => {
@@ -74,14 +100,17 @@ exports.DeleteReviewService = expressAsyncHandler(async (req, res, next) => {
   });
 
   const new_rating =
-    ((review.plante.Count_Rate + 1 )  * review.plante.rating - review.rating) /
-    (review.plante.Count_Rate );
-  
+    review.plante.Count_Rate != 1
+      ? Math.round(
+          (review.plante.Count_Rate * review.plante.rating - review.rating) /
+            (review.plante.Count_Rate - 1)
+        )
+      : 0;
 
   const plante = await prisma.plante.update({
     where: { id: review.planteId },
     data: {
-      rating: { decrement: new_rating },
+      rating: new_rating,
       Count_Rate: { decrement: 1 },
     },
   });

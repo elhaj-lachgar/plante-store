@@ -62,7 +62,12 @@ router.put(
   ChangePasswordService
 );
 
-router.post("/admin-login", AdminSignInValidator, AdminLoginService);
+router.post(
+  "/admin-login",
+  limiter(60, 3),
+  AdminSignInValidator,
+  AdminLoginService
+);
 
 router.get("/get-users", AuthService, AllowdTo("ADMIN"), GetUsersService);
 

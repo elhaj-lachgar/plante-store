@@ -4,8 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "build": "cross-env  NODE_ENV=pro node   server.js ",
-    "dev": "nodemon    server.js"
+    "build": "cross-env dotenv NODE_ENV=pro  node   server.js ",
+    "dev": "nodemon server.js"
   },
   "author": "",
   "license": "ISC",
