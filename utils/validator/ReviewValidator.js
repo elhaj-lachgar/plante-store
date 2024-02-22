@@ -1,7 +1,7 @@
-const { PrismaClient } = require('@prisma/client')
+const prisma  = require("../PrismaClient");
 const ValidatorMiddleware = require("../../middleware/ValidatorMiddleware");
 const { check} = require("express-validator");
-const prisma = new PrismaClient()
+
 
 exports.CreateReviewValidator=[
     check('id')
